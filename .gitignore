@@ -1,0 +1,12 @@
+# executables
+*.exe
+*.out
+
+# object files
+*.o
+
+# list of executables
+hello_world
+c2f
+molar
+sphere
