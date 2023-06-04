@@ -182,6 +182,7 @@ end program molar_mass
 > **注：**
 >   - 数组默认从1开始序数
 >   - 也可以自定义从任意位置开始序数
+>   - 多维数组由前向后（维度）记录 (column major)
 
 ```fortran
 program arrays
@@ -201,6 +202,9 @@ program arrays
   real :: array4(0:9) ! 长度为10
   real :: array5(-5:5) ! 长度为11
 
+  ! 可分配（动态）数组 - 变长数组
+  real, allocatable :: array6(:,:)
+
 
   ! ******************** 数组初始化 ********************
   array1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  ! Array constructor
@@ -212,5 +216,73 @@ program arrays
   array2(6:) = 1  ! 将第5个元素向后的所有元素设为1
   array3(1,2:3) = 0 ! 将array3的第1行第2，3列的元素设为0
   array4(0) = 1 ! 将array4的第1个元素设为1
+
+  ! ******************** 动态数组 ********************
+  ! 分配大小
+  allocate(array6(16,32)) ! 16 x 32 的数组
+  deallocate(array6) ! 释放数组空间
 end program arrays
+```
+
+### 字符串
+```fortran
+program string
+  implicit none
+
+  ! ******************** 字符串声明 ********************
+  ! 定长字符串
+  character(len=4) :: xing ! 姓
+  character(len=5) :: ming ! 名
+  character(10) :: name ! 姓名
+  ! 变长字符串 (可分配字符串)
+  character(:), allocatable :: first_name
+  character(:), allocatable :: last_name
+
+  ! ******************** 定长字符串 ********************
+  xing = '屈'
+  ming = '原'
+
+  ! 字符串串联
+  name = xing//ming
+
+  print *, name
+
+  ! ******************** 变长字符串 ********************
+  allocate(character(4) :: first_name)
+  first_name = 'yyyy'
+
+  last_name = 'xxxxx'
+  print *, first_name//' '//last_name
+end program string
+```
+
+### 字符串数组
+顾名思义，即存储字符串的数组
+```fortran
+program string_array
+  implicit none
+  character(len=10), dimension(2) :: keys
+  character(len=10), dimension(3,2) :: vals
+
+  keys = [character(len=10) :: "姓名", "学号"]
+  vals(1,:) = [character(len=10) :: "张三", "001"]
+  vals(2,:) = [character(len=10) :: "李四", "002"]
+  vals(3,:) = [character(len=10) :: "王五", "003"]
+
+  call show(keys, vals)
+
+  contains
+
+  subroutine show(akeys, avals)
+    character(len=*), intent(in) :: akeys(:), avals(:,:)
+    integer                      :: i
+
+    print *, akeys
+
+    do i = 1, size(avals,1)
+      print *, avals(i,:)
+    end do
+  end subroutine show
+
+end program string_array
 ```
