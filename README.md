@@ -33,6 +33,7 @@ AOCC 编译器被免费提供，支持 x86_64 架构的 Linux 平台。
 $ gfortran --version
 ```
 
+---
 ## 二. Hello World
 
 创建一个Fortran脚本`hello_world.f90`，用你最喜欢的编辑器打开并写入下面的代码
@@ -75,6 +76,7 @@ program read_value
 end program read_value
 ```
 
+---
 ## 四. 基本数据类型
 
 * integer 整数
@@ -125,6 +127,7 @@ program float_precision
 end program float_precision
 ```
 
+---
 ## 五. 运算符
 
 * `+` 加
@@ -175,6 +178,7 @@ program molar_mass
 end program molar_mass
 ```
 
+---
 ## 六. 数组和字符串
 
 ### 数组
@@ -285,4 +289,143 @@ program string_array
   end subroutine show
 
 end program string_array
+```
+
+---
+## 七. 流程控制
+
+### 逻辑运算
+
+|关系运算符|(或)|描述|
+|:---:|:---:|:---:|
+|`==`|`.eq.`|是否相等|
+|`/=`|`.ne.`|是否不相等|
+|`>`|`.gt.`|是否大于|
+|`<`|`.lt.`|是否小于|
+|`>=`|`.ge.`|是否大于等于|
+|`<=`|`.le.`|是否小于等于|
+
+|逻辑运算符|描述|
+|:---:|:---:|
+|`.and.`|与|
+|`.or.`|或|
+|`.not.`|非|
+|`.eqv.`|同或（前后逻辑值**相同**返回**真**）|
+|`.neqv.`|异或（前后逻辑值**不同**返回**真**）|
+
+### 条件语句
+
+```fortran
+program if_statement
+  implicit none
+
+  real :: angle 
+
+  read *, angle
+
+  if (angle < 90.0) then
+    print *, '锐角'
+  else if (angle < 180.0) then
+    print *, '钝角'
+  else
+    print *, '什么角？'
+  end if
+
+end program if_statement
+```
+
+### 循环语句
+
+#### 序数循环
+`do` 后加上序数。如：`do i = 1,100,3`，其中`1`为起始值，`100`为结束值，`3`为步长。
+
+```fortran
+program do_statement
+  implicit none
+
+  integer :: i
+
+  do i = 1, 10, 2
+    print *, i  ! Print odd numbers
+  end do
+
+end program do_statement
+```
+
+#### 条件循环
+`do while (condition)`
+
+```fortran
+program do_while_statement
+  implicit none
+
+  integer :: i = 1
+
+  do while (i < 11)
+    print *, i
+    i = i + 1
+  end do
+  
+  print *, i ! i此时为11
+
+end program do_while_statement
+```
+
+#### 循环控制
+* `cycle` - （最近的）循环进入下一个取值
+* `exit` - 跳出（最近的）循环
+
+```fortran
+program cycle_prog
+  implicit none
+
+  integer :: i
+
+  do i = 1, 10
+    if (mod(i, 2) == 0) then
+        cycle  ! 不再运行后面的程序，直接进入下一个i取值
+    end if
+    print *, i
+  end do
+
+end program cycle_prog
+```
+
+```fortran
+program exit_prog
+  implicit none
+
+  integer :: i
+
+  do i = 1, 100
+    if (i > 10) then
+      exit  ! 立即停止循环
+    end if
+    print *, i
+  end do
+
+end program exit_prog
+```
+
+在嵌套循环时，还可以给每个循环添加标签，在使用`cycle` 和 `exit` 后加上标签名即可对相应的循环产生作用
+```fortran
+program tag_do
+  implicit none
+
+  integer :: i, j
+
+  outer_loop: do i = 1, 10
+    inner_loop: do j = 1, 10
+      if (i > 7) then
+        exit outer_loop ! 退出外部循环(outer_loop)
+      end if
+
+      if ((j + i) > 10) then 
+        cycle outer_loop  ! 如果j+i的值大于10，则跳过剩下的内部循环(inner_loop)，进入下一个i的取值(outer_loop)
+      end if
+      print *, 'I=', i, ' J=', j, ' Sum=', j + i
+    end do inner_loop
+  end do outer_loop
+
+end program tag_do
 ```
