@@ -6,6 +6,29 @@
 3. https://www.nsc.liu.se/~boein/f77to90/f77to90.html#index
 4. https://gcc.gnu.org/onlinedocs/gcc-4.2.4/gfortran/index.html#Top
 
+- [Fortran 基础](#fortran-基础)
+  - [一. 编译器](#一-编译器)
+  - [二. Hello World](#二-hello-world)
+  - [三. 标准输入和输出 (io)](#三-标准输入和输出-io)
+  - [四. 基本数据类型](#四-基本数据类型)
+    - [浮点数精度](#浮点数精度)
+  - [五. 运算符](#五-运算符)
+  - [六. 数组和字符串](#六-数组和字符串)
+    - [数组](#数组)
+    - [字符串](#字符串)
+    - [字符串数组](#字符串数组)
+  - [七. 流程控制](#七-流程控制)
+    - [逻辑运算](#逻辑运算)
+    - [条件语句](#条件语句)
+    - [循环语句](#循环语句)
+      - [序数循环](#序数循环)
+      - [条件循环](#条件循环)
+      - [循环控制](#循环控制)
+  - [八. 函数与代码结构](#八-函数与代码结构)
+    - [子例程和函数](#子例程和函数)
+    - [代码结构](#代码结构)
+
+
 ## 一. 编译器
 
 在此列出一些常见的Fortran编译器（参考[fortran-lang.org](https://fortran-lang.org/zh_CN/compilers/)的列表）
@@ -428,4 +451,204 @@ program tag_do
   end do outer_loop
 
 end program tag_do
+```
+
+
+---
+## 八. 函数与代码结构
+
+### 子例程和函数
+Fortran里有两种子程序，一种是`subroutine` (子例程)，一种是`function` (函数)。
+
+传入的参数有三种形式，`intent(in)` 只读，`intent(out)` 只写，`intent(inout)` 读写
+
+一般来说，`function` (函数)只能有一个返回值，而`subroutine` (子例程)可以通过写入多个`intent(out)` 只写或`intent(inout)` 读写参数来拥有多个返回值
+
+* ___子例程___ ___subroutine___ 
+```fortran
+subroutine vector_product(n,a,b,dot_pro,element_wise_pro)
+  integer, intent(in) :: n
+  real, intent(in) :: a(n), b(n)
+  real, intent(out) :: dot_pro, element_wise_pro(n)
+
+  integer :: i
+
+  dot_pro = 0.
+  do i = 1,n
+    dot_pro = dot_pro + a(i) * b(i)
+    element_wise_pro(i) = a(i) * b(i)
+  end do
+
+end subroutine vector_product
+
+```
+
+* ___函数___ ___function___ 
+```fortran
+function vector_norm(n,vec) result(norm)
+  integer, intent(in) :: n
+  real, intent(in) :: vec(n)
+  real :: norm
+
+  norm = sqrt(sum(vec**2))
+
+end function vector_norm
+```
+
+上面这个函数还可以将`result(norm)`省去，直接用函数名代替返回变量
+```fortran
+function vector_norm(n,vec)
+  integer, intent(in) :: n
+  real, intent(in) :: vec(n)
+  real :: vector_norm
+
+  vector_norm = sqrt(sum(vec**2))
+
+end function vector_norm
+```
+
+或者直接在`function`关键词前添加类型，对函数名进行声明
+```fortran
+real function vector_norm(n,vec)
+  integer, intent(in) :: n
+  real, intent(in) :: vec(n)
+
+  vector_norm = sqrt(sum(vec**2))
+
+end function vector_norm
+```
+
+### 代码结构
+Fortran 里有四种方式存放子例程(`subroutine`)和函数(`function`)
+
+__1.__ 内部(internal)函数；在`program`中使用`contains`存放函数
+__2.__ 外部(external)函数；存放在`program`之外
+__3.__ 单独文件存放（编译时将涉及的文件全部编译）
+__4.__ 使用模块(module)管理；在`implicit none`前使用`use`加上模块名来导入模块，使用`only: ...`来导入特定的函数或变量
+
+下面的例子在[5. 子例程+函数+代码结构](./5.%20%E5%AD%90%E4%BE%8B%E7%A8%8B%2B%E5%87%BD%E6%95%B0%2B%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/)文件夹中
+
+```fortran
+! main.f90
+program structure
+  ! ****************** 模块 ******************
+  use STATS, only: pi, mean_std 
+  implicit none
+
+  integer :: n_x
+  real :: x(3), y(3), dot_product, element_wise_product(3)
+  real :: deriv(3)
+
+  real, external :: norm1 ! 外部函数
+
+  real :: data_array(5), data_mean, data_std
+
+  x = [1,2,3]
+  y = [3,2,1]
+  n_x = size(x)
+
+  ! ****************** 内部 ******************
+  print *, '内部函数：'
+  call vector_product(n_x, x, y, dot_product, element_wise_product)
+
+  print *, 'x · y = ', dot_product
+  print *, 'element wise product = ', element_wise_product
+
+  print *, '||x||_2 = ', vector_norm(n_x, x)
+  print *, ''
+
+  ! ****************** 外部 ******************
+  print *, '外部函数：'
+  print *, '||x|| = ', norm1(n_x, x)
+  print *, ''
+
+  ! ****************** 单独文件存放 ******************
+  print *, '其他文件（derivative）：'
+  call derivative(x, n_x, 0.5, deriv)
+  print *, deriv
+  print *, ''
+
+  ! ****************** 模块 ******************
+  print *, '模块（STATS）：'
+  data_array = [pi, 2*pi, 3*pi, 4*pi, 5*pi]
+  call mean_std(5, data_array, data_mean, data_std)
+  print *, '均值：', data_mean
+  print *, '标准差：', data_std
+
+contains
+
+  subroutine vector_product(n,a,b,dot_pro,element_wise_pro)
+    integer, intent(in) :: n
+    real, intent(in) :: a(n), b(n)
+    real, intent(out) :: dot_pro, element_wise_pro(n)
+
+    integer :: i
+
+    dot_pro = 0.
+    do i = 1,n
+      dot_pro = dot_pro + a(i) * b(i)
+      element_wise_pro(i) = a(i) * b(i)
+    end do
+
+  end subroutine vector_product
+
+  function vector_norm(n,vec)
+    integer, intent(in) :: n
+    real, intent(in) :: vec(n)
+    real :: vector_norm
+
+    vector_norm = sqrt(sum(vec**2))
+
+  end function vector_norm
+
+end program structure
+
+real function norm1(n,vec)
+  integer, intent(in) :: n
+  real, intent(in) :: vec(n)
+
+  norm1 = sum(abs(vec))
+
+end function norm1
+```
+
+```fortran
+! Finite_Derivative.f90
+SUBROUTINE derivative (data, ndt, h, deriv)
+    integer, intent(in) :: ndt
+    real   , intent(in) :: data(ndt), h
+    real   , intent(out):: deriv(ndt)
+    integer             :: i
+
+    do i = 1,ndt-1
+        deriv(i) = (data(i+1)-data(i))/h
+    end do
+    deriv(ndt) = 0.
+END SUBROUTINE derivative
+```
+
+```fortran
+! mean_std_module.f90
+module STATS
+  real, parameter :: pi = 3.141592653589293
+
+contains
+
+  SUBROUTINE mean_std(n,data,mean,std)
+    integer, intent(in) :: n
+    real   , intent(in) :: data(n)
+    real   , intent(out):: mean, std
+    integer :: i
+    real    :: sum = 0., sum_of_squared = 0.
+
+    do i = 1,n
+        sum = sum + data(i)
+        sum_of_squared = sum_of_squared + data(i) ** 2
+    end do
+
+    mean = sum / n
+    std = sqrt(sum_of_squared/n - (mean ** 2))
+  END SUBROUTINE mean_std
+
+end module STATS
 ```
