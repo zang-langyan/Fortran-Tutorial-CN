@@ -28,6 +28,7 @@
     - [子例程和函数](#子例程和函数)
     - [代码结构](#代码结构)
   - [九. 面向对象 -- 类或结构体](#九-面向对象----类或结构体)
+  - [十. 格式](#十-格式)
 
 
 ## 一. 编译器
@@ -85,7 +86,7 @@ $ ./hello_world
 
 ## 三. 标准输入和输出 (io)
 
-此处介绍最基本的用法，详细的用法将在格式和读写文件章节中介绍
+此处介绍最基本的用法，详细的用法将在[十. 格式](#十-格式)和读写文件章节中介绍
 
 ```fortran
 program read_value
@@ -732,4 +733,110 @@ program typedemo
   print *, "call member function:"
   print *, euler_coord_func
 end program typedemo
+```
+
+---
+## 十. 格式
+
+在打印或读取数据的时候，我们常常需要指定打印或读取数据的格式。例如，我们想要打印`real :: pi = 3.141592653589293`，但只想保留2位小数，我们就可以写`write(*,'(F4.2)')`。所以，之前在[标准输入和输出 (io)](#三-标准输入和输出-io)章节中见过的`read(*,*)`和`write(*,*)`中的第二个`*`就代表默认的格式，编译器会根据数据类型进行选择格式；第一个`*`代表输入或输出位置，我们将在下一章看到。(同样，`read *`和`write *`以及`print *`中的`*`也代表默认格式，如果需要明确格式则将其替换。)
+
+格式是以字符串定义的，字符串中的格式必须以小括号包裹，如`'(A)'`。下面的表列出了不同类型的数据格式可以如何明确。
+
+<TABLE CELLPADDING=3 BORDER=2>
+     <TR ALIGN=CENTER>
+          <TD COLSPAN=2> <B><I>目的</I></B>  </TD>
+          <TD COLSPAN=2> <B><I>格式</I></B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD COLSPAN=2 ALIGN=LEFT> 读/写 <B>整数 INTEGER</B>s </TD>
+          <TD> <B>I<I>w</I></B> </TD>
+          <TD> <B>I<I>w.m</I></B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT ROWSPAN=4> 读/写 <B>浮点数 REAL</B>s </TD>
+          <TD ALIGN=LEFT> 小数格式 </TD>
+          <TD COLSPAN=2> <B>F<I>w.d</I></B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT> 指数格式 </TD>
+          <TD> <B>E<I>w.d</I></B> </TD>
+          <TD> <B>E<I>w.d</I>E<I>e</I></B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT> 科学计数格式 </TD>
+          <TD> <B>ES<I>w.d</I></B> </TD>
+          <TD> <B>ES<I>w.d</I>E<I>e</I></B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT> 工程计数格式 </TD>
+          <TD> <B>EN<I>w.d</I></B> </TD>
+          <TD> <B>EN<I>w.d</I>E<I>e</I></B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD COLSPAN=2 ALIGN=LEFT> 读/写 <B>逻辑值 LOGICAL</B>s </TD>
+          <TD COLSPAN=2> <B>L<I>w</I></B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD COLSPAN=2 ALIGN=LEFT> 读/写 <B>字符/字符串 CHARACTER</B>s </TD>
+          <TD> <B>A</B> </TD>
+          <TD> <B>A<I>w</I></B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ROWSPAN=3 ALIGN=LEFT> 对齐 </TD>
+          <TD ALIGN=LEFT> 水平 </TD>
+          <TD COLSPAN=2> <B><I>n</I>X</B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT> Tabbing </TD>
+          <TD> <B>T<I>c</I></B> </TD>
+          <TD> <B>TL<I>c</I></B> and <B>TR<I>c</I></B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT> 垂直 </TD>
+          <TD COLSPAN=2> <B>/</B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ROWSPAN=4 ALIGN=LEFT> 其他 </TD>
+          <TD ALIGN=LEFT> Grouping </TD>
+          <TD COLSPAN=2>  <B><I>r</I>(....)</B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT> Format Scanning Control </TD>
+          <TD COLSPAN=2> <B>:</B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT> Sign Control </TD>
+          <TD COLSPAN=2> <B>S</B>, <B>SP</B> and <B>SS</B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT> Blank Control </TD>
+          <TD COLSPAN=2> <B>BN</B> and <B>BZ</B> </TD>
+     </TR>
+     <TR ALIGN=CENTER>
+          <TD ALIGN=LEFT> <B>注</B> </TD>
+          <TD COLSPAN=3> <B>w</B> - 宽度, <B>m</B> - 最小宽度 , <B>d</B> - 小数位数  , <B>e</B> - 指数位数</TD>
+     </TR>
+</TABLE>
+
+```fortran
+program format
+  implicit none
+  
+  real :: array(10)
+  character(len=6) :: text = 'String'
+  
+  print '(A3)', text ! 只能打印‘Str’
+  print '(A6)', text ! 可以打印‘String’
+
+  call random_number(array)
+  ! 默认格式
+  write(*,*) array
+  
+  ! 小数格式
+  write(*,'(F5.3)') array
+  
+  ! 科学计数格式
+  write(*,'(ES10.3)') array
+  
+end program format
 ```
