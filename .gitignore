@@ -18,3 +18,7 @@ traverse
 main
 polar
 format
+file
+*.bin
+*.dat
+*.csv
