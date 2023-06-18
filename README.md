@@ -30,6 +30,7 @@
   - [九. 面向对象 -- 类或结构体](#九-面向对象----类或结构体)
   - [十. 格式](#十-格式)
   - [十一. 文件读写](#十一-文件读写)
+  - [十二. 指针](#十二-指针)
 
 
 ## 一. 编译器
@@ -876,4 +877,85 @@ program file
 end program file
 ```
 
+---
+## 十二. 指针
+Fortran中的指针可以指向变量和函数。在声明指针时，我们要加上`pointer`关键词，如`real, pointer :: p`。在声明被指向变量时，要加上`target`关键词，如`real, target :: a = 3.14`。在声明完成后，我们可以在主程序中用`=>`运算符对指针赋值。
 
+指针也可以指向函数，如`procedure(functionName), pointer :: p_func`，这样`p_func`就创建了一个和`functionName`具有同样输入参数的函数指针。如果我们有多个函数且它们具有同样的输入参数(类型和数量)，则`p_func`就可以在主程序中指向任意一个函数。
+
+指针还可以指向同一类型的指针，当指向一个指针时，当前指针会指向被指向指针所指向的目标。因此，当被指向指针改变之后，当前指针并不会跟随被指向指针改变其指向目标的地址。我们可以在下面的例子中具体看到。
+
+```fortran
+program pointerdemo
+  implicit none
+
+  integer, pointer :: p0
+  integer, target :: i0 = 99, i1 = 1000
+
+  real, pointer :: p1(:) ! 数组指针直接声明为可分配(变长)数组即可
+  real, target :: r0(5) = (/ 1,2,3,4,5 /)
+
+  procedure(f), pointer :: pf
+
+  real, pointer :: p_r, pp_r
+  real, target :: r1 = 1.5, r2 = 3.14
+
+  ! 1. 简单的单一变量指针
+  print *, "1. 简单的单一变量指针"
+  print *, 'i0 = ', i0
+  print *, 'i1 = ', i1
+  p0 => i0
+  p0 = 999 ! p0指向i0，修改p0的值，i0的值也会被修改
+  print *, 'i0 = ', i0
+  print *, 'i1 = ', i1
+  print *, 'p0 = ', p0
+  p0 => i1
+  p0 = 10000 ! 此时p0指向i1，修改p0的值，i1的值也会被修改
+  print *, 'i0 = ', i0
+  print *, 'i1 = ', i1
+  print *, 'p0 = ', p0
+  print *
+
+  ! 2. 数组指针
+  print *, "2. 数组指针"
+  print *, 'r0 = ', r0
+  p1 => r0
+  p1(1:3) = 0
+  print *, 'r0 = ', r0 ! r0的前3个元素被赋值为0
+  print *
+
+  ! 3. 函数指针
+  print *, "3. 函数指针"
+  pf => f
+  print *, 'pf(2) = ', pf(2.) ! 调用f(2.)
+  pf => g
+  print *, 'pf(2) = ', pf(2.) ! 调用g(2.)
+  print *
+
+  ! 4. 指针的指针
+  print *, "4. 指针的指针"
+  print *, 'r1 = ', r1
+  print *, 'r2 = ', r2
+  p_r => r1
+  pp_r => p_r
+  print *, 'p_r = ', p_r ! p_r指向r1
+  print *, 'pp_r = ', pp_r ! pp_r指向r1
+  p_r => r2
+  print *, 'p_r = ', p_r ! p_r指向r2
+  print *, 'pp_r = ', pp_r ! pp_r仍然指向r1
+  print *
+
+contains
+
+  real function f(x)
+    real, intent(in) :: x
+    f = x**2
+  end function f
+
+  real function g(x)
+    real, intent(in) :: x
+    g = x**3
+  end function g
+
+end program pointerdemo
+```
