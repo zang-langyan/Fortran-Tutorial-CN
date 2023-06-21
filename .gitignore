@@ -23,3 +23,5 @@ file
 *.dat
 *.csv
 pointer
+mpi_parallel
+coarray_parallel

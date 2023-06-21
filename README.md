@@ -31,6 +31,9 @@
   - [十. 格式](#十-格式)
   - [十一. 文件读写](#十一-文件读写)
   - [十二. 指针](#十二-指针)
+  - [十三. 并行计算](#十三-并行计算)
+    - [MPI](#mpi)
+    - [Coarray](#coarray)
 
 
 ## 一. 编译器
@@ -958,4 +961,75 @@ contains
   end function g
 
 end program pointerdemo
+```
+
+---
+## 十三. 并行计算
+
+Fortran中的并行计算/分布式计算有多种方式实现
+
+1. MPI (Message-Passing-Interface) ([mpich.org](www.mpich.org), [open-mpi.org](www.open-mpi.org))
+2. Coarray Fortran (GNU Fortran) ([opencoarrays.org/](http://www.opencoarrays.org/))
+3. CUDA Fortran (GPUs parallel)
+
+我们这里简单介绍一下MPI和Coarray的用法
+
+### MPI
+首先要能使用MPI来进行并行计算，需要先下载MPI - [open-mpi.org](https://www.open-mpi.org/)
+
+创建一个名为`mpi_parallel.f90`的文件
+```fortran
+! mpi_parallel.f90
+program mpi_parrallel
+  use mpi ! 调用MPI模块
+  implicit none
+
+  integer :: ierr, num_processors, my_processor_id
+
+  call MPI_INIT(ierr) ! 启动MPI
+  call MPI_COMM_SIZE(MPI_COMM_WORLD, num_processors, ierr) ! 获取CPUs的数量
+  call MPI_COMM_RANK(MPI_COMM_WORLD, my_processor_id, ierr) ! 获取当前工作的CPU编号
+
+  print *, 'Hello from processor ', my_processor_id, ' of ', num_processors
+
+  call MPI_FINALIZE(ierr) ! 终止MPI
+
+end program mpi_parrallel
+```
+
+在编译时使用`mpifort`/`mpif90`/`mpif77`进行编译，其中，`mpifort`可以编译任意版本的fortran文件，`mpif90`和`mpif77`分别可以编译`.f90`和`.f77`的fortran文件。不过，`mpif90`和`mpif77`在以后的版本可能不再支持。
+```shell
+$ mpifort mpi_parallel.f90 -o mpi_parallel
+```
+
+在运行，必须使用`mpirun -n [number of cores]`来调用CPU。
+```shell
+$ mpirun -n 4 mpi_parallel 
+ Hello from processor            0  of            4
+ Hello from processor            1  of            4
+ Hello from processor            2  of            4
+ Hello from processor            3  of            4
+```
+
+### Coarray
+使用Coarray首先要去[opencoarrays.org](http://www.opencoarrays.org/)下载Coarrays.
+
+创建一个名为`coarray_parallel.f90`的文件
+```fortran
+program coarray_parrallel
+
+  print *, 'Hello from processor ', this_image(), ' of ', num_images()
+
+end program coarray_parrallel
+```
+
+和MPI类似，编译时使用`caf`，运行时使用`cafrun -n [number of cores]`
+
+```shell
+$ caf coarray_parallel.f90 -o coarray_parallel
+$ cafrun -n 4 coarray_parallel
+ Hello from processor            2  of            4
+ Hello from processor            3  of            4
+ Hello from processor            4  of            4
+ Hello from processor            1  of            4
 ```
