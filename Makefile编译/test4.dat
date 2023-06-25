@@ -1,0 +1,10 @@
+&inputs
+  Pr=0.01 
+  nx=257, ny=65
+  total_time=0.1
+  Ra=1.e6
+  err=1.e-3
+  a_dif=0.15
+  a_adv=0.4
+  Tinit='cosine'
+  /

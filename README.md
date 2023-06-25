@@ -38,6 +38,7 @@
     - [数值](#数值)
     - [数学](#数学)
     - [数组](#数组-1)
+  - [十五. Makefile管理项目](#十五-makefile管理项目)
 
 
 ## 一. 编译器
@@ -1101,3 +1102,102 @@ Fortran中有相当多的内置函数，我在此列出一部分常用的函数�
 |`SUM(ARRAY, [[dim], [mask]])`|数组元素和|
 |`SIZE(ARRAY, dim)`| 数组dim维度元素个数|
 |`RESHAPE(SOURCE, SHAPE)`|数组重构|
+
+
+---
+## 十五. Makefile管理项目
+在使用`make`之前，我们需要去[https://www.gnu.org/software/make/](https://www.gnu.org/software/make/)网站下载make。下载好之后，我们就可以通过编写`Makefile`文件来管理项目了。
+
+在[Makefile编译](./Makefile%E7%BC%96%E8%AF%91/)文件夹中是我写好的一个计算**对流-扩散方程**的小型项目。项目结构如下所示
+
+```bash
+Makefile编译
+├── FD_SCHEME.f90
+├── FINITE_DERIVATIVE.f90
+├── ADVECTION_DIFFUSION.f90
+├── POISSON_SOLVER.f90
+├── CONVECTION_DIFFUSION.f90
+├── convection_diffusion_main.f90
+└── Makefile
+```
+
+接着我们创建一个`Makefile`文件，在其中写入如下所示的编译规则。
+
+```Makefile
+# Disable all of make's built-in rules (similar to Fortran's implicit none)
+MAKEFLAGS += --no-builtin-rules --no-builtin-variables
+
+# configuration
+FC := gfortran
+LD := $(FC)
+AR := ar -r
+# RM := rm -f
+
+# list of all source files
+SRCS := FINITE_DERIVATIVE.f90 FD_SCHEME.f90 POISSON_SOLVER.f90 ADVECTION_DIFFUSION.f90 CONVECTION_DIFFUSION.f90
+OBJS := FINITE_DERIVATIVE.o FD_SCHEME.o POISSON_SOLVER.o ADVECTION_DIFFUSION.o CONVECTION_DIFFUSION.o
+LIBR := libCODF.a
+
+PROG := convection_diffusion_main.f90
+EXEC := co_df
+
+# command line arguments
+CMLA := test
+
+.PHONY: all test run clean
+all: $(EXEC)
+
+$(EXEC): $(LIBR)
+	$(LD) -o $@ $(PROG) $^
+
+$(LIBR): $(OBJS)
+	$(AR) $@ $^
+
+$(OBJS):
+	$(FC) -c $(SRCS)
+
+# define dependencies between object files
+ADVECTION_DIFFUSION.o: FINITE_DERIVATIVE.o FD_SCHEME.o
+
+# rebuild all object files in case this Makefile changes
+# $(OBJS): $(MAKEFILE_LIST)
+
+test:
+	for idx in 1 2 3 4 5; do \
+		./$(EXEC) $(addsuffix .dat, $(addsuffix $$idx, $(CMLA))); \
+	done
+
+run:
+	./$(EXEC) Prandtl.dat
+#	./$(EXEC) Prandtl_EMPTY.dat
+
+clean:
+	$(RM) $(filter %.o, $(OBJS)) $(wildcard *.mod) $(EXEC) $(LIBR) $(wildcard *.bin)
+```
+
+要运行定义好的分支的话，就在命令行中输入`make`后面加上分支名。
+
+- `all`分支
+```bash
+make
+```
+或
+```bash
+make all
+```
+> **注：** 在命令行中输入`make`时，make可执行文件会自动搜寻当前文件夹下的`Makefile`文件，并运行其中的`all`分支。
+ 
+- `run`分支
+```bash
+make run
+```
+
+- `test`分支
+```bash
+make test
+```
+
+- `clean`分支
+```bash
+make clean
+```

@@ -20,7 +20,7 @@ polar
 format
 file
 *.bin
-*.dat
+data.dat
 *.csv
 pointer
 mpi_parallel
