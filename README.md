@@ -1054,8 +1054,8 @@ Fortran中有相当多的内置函数，我在此列出一部分常用的函数�
 |`abs`|绝对值|`abs(-1.5)` $\rightarrow$ 1.5|
 |`aint`|向0取整|`aint(-2.999)` $\rightarrow$ -2; `aint(2.999)` $\rightarrow$ 2|
 |`anint`|四舍五入取整|`anint(-2.999)` $\rightarrow$ -3; `anint(2.4)` $\rightarrow$ 2|
-|`ceiling`|向$\infty$取整|`ceiling(-2.99)` $\rightarrow$ -2; `ceiling(2.4)` $\rightarrow$ 3|
-|`floor`|向$-\infty$取整|`floor(-2.99)` $\rightarrow$ -3; `floor(2.4)` $\rightarrow$ 2|
+|`ceiling`|向 $\infty$ 取整|`ceiling(-2.99)` $\rightarrow$ -2; `ceiling(2.4)` $\rightarrow$ 3|
+|`floor`|向 $-\infty$ 取整|`floor(-2.99)` $\rightarrow$ -3; `floor(2.4)` $\rightarrow$ 2|
 |`conjg`|取复数共轭|`conjg((1,2))` $\rightarrow$ (1,-2)|
 |`max`|最大值|`max(1,2,3,4,5,6)` $\rightarrow$ 6|
 |`min`|最小值|`min(1.0,2.0,3.0,4.0,5.0,6.0)` $\rightarrow$ 1.0|
@@ -1079,17 +1079,17 @@ Fortran中有相当多的内置函数，我在此列出一部分常用的函数�
 |`sinh`|双曲正弦|`sinh(x)` $\rightarrow$ $sinh(x) = \dfrac{e^x - e^{-x}}{2}$|
 |`cosh`|双曲余弦|`cosh(x)` $\rightarrow$ $cosh(x) = \dfrac{e^x + e^{-x}}{2}$|
 |`tanh`|双曲正切|`tanh(x)` $\rightarrow$ $tanh(x) = \dfrac{e^x - e^{-x}}{e^x + e^{-x}}$|
-|`random_number`(子例程)|生成$U(0,1)$的随机数|`call random_number(harvest)` $\rightarrow$ harvest $\sim U(0,1)$|
-|`bessel_j0`|第一类0阶贝塞尔函数$J_0(x)$(Bessel function of the first kind of order 0)|`bessel_j0(x)` $\rightarrow$ $J_0(x) = \sum_{m = 0}^{\infty} \dfrac{(-1)^m}{m!\Gamma(m+1)}\left( \dfrac{x}{2} \right)^{2m}$|
-|`bessel_j1`|第一类1阶贝塞尔函数$J_1(x)$(Bessel function of the first kind of order 1)|`bessel_j1(x)` $\rightarrow$ $J_1(x) = \sum_{m = 0}^{\infty} \dfrac{(-1)^m}{m!\Gamma(m+2)}\left( \dfrac{x}{2} \right)^{2m+1}$|
-|`bessel_jn`|第一类n阶贝塞尔函数$J_n(x)$(Bessel function of the first kind of order n)|`bessel_jn(n,x)` $\rightarrow$ $J_n(x) = \sum_{m = 0}^{\infty} \dfrac{(-1)^m}{m!\Gamma(m+n+1)}\left( \dfrac{x}{2} \right)^{2m+n}$ (注: `integer :: n`， n 为正整数)|
-|`bessel_y0`|第二类0阶贝塞尔函数$Y_0(x)$(Bessel function of the second kind of order 0)|`bessel_y0(x)` $\rightarrow$ $Y_0(x) = \dfrac{J_0(x) - J_{-0}(x)}{sin(0)}$|
-|`bessel_y1`|第二类1阶贝塞尔函数$Y_1(x)$(Bessel function of the second kind of order 1)|`bessel_y1(x)` $\rightarrow$ $Y_1(x) = \dfrac{J_1(x)cos(\pi) - J_{-1}(x)}{sin(\pi)}$|
-|`bessel_yn`|第二类n阶贝塞尔函数$Y_n(x)$(Bessel function of the second kind of order n)|`bessel_yn(n,x)` $\rightarrow$ $Y_n(x) = \dfrac{J_n(x)cos(n\pi) - J_{-n}(x)}{sin(n\pi)}$ (注: `integer :: n`， n 为整数)|
-|`erf`|误差函数|`erf(x)` $\rightarrow$ $erf(x) = \dfrac{2}{\sqrt{\pi}} \int_{0}^{x}e^{-t^2}dt$|
-|`erfc`|互补误差函数|$erfc(x) = 1 - erf(x) = \dfrac{2}{\sqrt{\pi}} \int_{x}^{\infty}e^{-t^2}dt$|
+|`random_number`(子例程)|生成 $U(0,1)$ 的随机数|`call random_number(harvest)` $\rightarrow$ harvest $\sim U(0,1)$|
+|`bessel_j0`|第一类0阶贝塞尔函数 $J_0(x)$ (Bessel function of the first kind of order 0)|`bessel_j0(x)` $\rightarrow$ $J_0(x) = \sum_{m = 0}^{\infty} \dfrac{(-1)^m}{m!\Gamma(m+1)}\left( \dfrac{x}{2} \right)^{2m}$|
+|`bessel_j1`|第一类1阶贝塞尔函数 $J_1(x)$ (Bessel function of the first kind of order 1)|`bessel_j1(x)` $\rightarrow$ $J_1(x) = \sum_{m = 0}^{\infty} \dfrac{(-1)^m}{m!\Gamma(m+2)}\left( \dfrac{x}{2} \right)^{2m+1}$|
+|`bessel_jn`|第一类n阶贝塞尔函数 $J_n(x)$ (Bessel function of the first kind of order n)|`bessel_jn(n,x)` $\rightarrow$ $J_n(x) = \sum_{m = 0}^{\infty} \dfrac{(-1)^m}{m!\Gamma(m+n+1)}\left( \dfrac{x}{2} \right)^{2m+n}$ (注: `integer :: n`， n 为正整数)|
+|`bessel_y0`|第二类0阶贝塞尔函数 $Y_0(x)$ (Bessel function of the second kind of order 0)|`bessel_y0(x)` $\rightarrow$ $Y_0(x) = \dfrac{J_0(x) - J_{-0}(x)}{sin(0)}$|
+|`bessel_y1`|第二类1阶贝塞尔函数 $Y_1(x)$ (Bessel function of the second kind of order 1)|`bessel_y1(x)` $\rightarrow$ $Y_1(x) = \dfrac{J_1(x)cos(\pi) - J_{-1}(x)}{sin(\pi)}$ |
+|`bessel_yn`|第二类n阶贝塞尔函数 $Y_n(x)$ (Bessel function of the second kind of order n)|`bessel_yn(n,x)` $\rightarrow$ $Y_n(x) = \dfrac{J_n(x)cos(n\pi) - J_{-n}(x)}{sin(n\pi)}$ (注: `integer :: n`， n 为整数)|
+|`erf`|误差函数|`erf(x)` $\rightarrow$ $erf(x) = \dfrac{2}{\sqrt{\pi}} \int_{0}^{x}e^{-t^2}dt$ |
+|`erfc`|互补误差函数| $erfc(x) = 1 - erf(x) = \dfrac{2}{\sqrt{\pi}} \int_{x}^{\infty}e^{-t^2}dt$ |
 |`erfc_scaled`|指数放缩误差函数|`erfc_scaled(x)` $\rightarrow$ $erfcx(x) = e^{x^2}erfc(x) = e^{x^2} \dfrac{2}{\sqrt{\pi}} \int_{x}^{\infty}e^{-t^2}dt$|
-|`gamma`|$\Gamma$函数|`gamma(x)` $\rightarrow$ $\Gamma(x) = (x-1)!$|
+|`gamma`| $\Gamma$ 函数|`gamma(x)` $\rightarrow$ $\Gamma(x) = (x-1)!$|
 |`norm2`|2-范数|`norm2(x)` $\rightarrow$ `sqrt(sum(x**2))` $\rightarrow$ $\lVert x \rVert _2$|
 
 ### 数组

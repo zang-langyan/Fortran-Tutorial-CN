@@ -25,3 +25,5 @@ data.dat
 pointer
 mpi_parallel
 coarray_parallel
+
+.DS_Store
